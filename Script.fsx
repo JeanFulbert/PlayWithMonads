@@ -108,6 +108,8 @@ let getAllSalariesFromLogin'''' login =
     >>= getUser
     >>= getAllSalaries
 
+let (>=>) f g x =
+    (f x)
+    >>= g
 
-
-
+let getAllSalariesFromLogin''''' = log >=> getUser >=> getAllSalaries
