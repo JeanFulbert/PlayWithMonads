@@ -16,10 +16,11 @@ type Employee = {
     salary: int
 }
 
-type Maybe<'a> =
+(*
+type Option<'a> =
 | Some of 'a
 | None
-
+*)
 
 let newToken () = Token <| Guid.NewGuid().ToString()
 
@@ -53,3 +54,60 @@ let getAllSalaries user =
                 { name = "Tchang-Yves" ; salary = 30000 }
                 { name = "Rosa" ; salary = 35000 }
             ])
+            
+let getAllSalariesFromLogin login =
+    let token = log login
+    if token |> Option.isNone
+    then None
+    else
+        let user = getUser (token |> Option.get)
+        if user |> Option.isNone
+        then None
+        else 
+            let allSalaries = getAllSalaries (user |> Option.get)
+            allSalaries
+            
+            
+let getAllSalariesFromLogin' login =
+    let token = log login
+    match token with
+    | None -> None
+    | Some t ->
+        let user = getUser t
+        match user with
+        | None -> None
+        | Some u ->
+            let allSalaries = getAllSalaries u
+            allSalaries
+
+let whenSome f v =
+    match v with
+    | None -> None
+    | Some x -> f x
+
+let getAllSalariesFromLogin'' login =
+    login
+    |> log
+    |> whenSome getUser
+    |> whenSome getAllSalaries
+
+let getAllSalariesFromLogin''' login =
+    login
+    |> log
+    |> Option.bind getUser
+    |> Option.bind getAllSalaries
+
+let (>>=) v f =
+    match v with
+    | None -> None
+    | Some x -> f x
+
+let getAllSalariesFromLogin'''' login =
+    login
+    |> log
+    >>= getUser
+    >>= getAllSalaries
+
+
+
+
