@@ -41,3 +41,25 @@ let getAllSalaries user =
             { name = "Tchang-Yves" ; salary = 30000 }
             { name = "Rosa" ; salary = 35000 }
         ]
+        
+
+let getAllSalariesFromLogin login =
+    let token = log login
+    let user = getUser token
+    let allSalaries = getAllSalaries user
+    allSalaries
+
+let getAllSalariesFromLogin' login =
+    getAllSalaries (getUser (log login))
+
+let getAllSalariesFromLogin'' login =
+    login
+    |> log
+    |> getUser
+    |> getAllSalaries
+
+let getAllSalariesFromLogin''' = log >> getUser >> getAllSalaries
+
+
+getAllSalariesFromLogin "admin"
+getAllSalariesFromLogin "chris"
