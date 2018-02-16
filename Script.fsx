@@ -16,28 +16,40 @@ type Employee = {
     salary: int
 }
 
+type Maybe<'a> =
+| Some of 'a
+| None
+
 
 let newToken () = Token <| Guid.NewGuid().ToString()
 
 let adminToken = newToken ()
 
+let stagiaireToken = newToken ()
+
 let log login =
     match login with
-    | "admin" -> adminToken
-    | _ -> newToken ()
+    | "" -> None
+    | "admin" -> Some adminToken
+    | _ -> Some <| newToken ()
 
 let getUser token =
-    if adminToken = token
-    then { name = "Jeannine" ; privileges = AllPrivileges }
-    else { name = "Jean-Pierre" ; privileges = Restricted }
+    if stagiaireToken = token
+    then None
+    else
+        Some (
+            if adminToken = token
+            then { name = "Jeannine" ; privileges = AllPrivileges }
+            else { name = "Jean-Pierre" ; privileges = Restricted })
 
 let getAllSalaries user =
     match user.privileges with
-    | Restricted -> []
+    | Restricted -> None
     | AllPrivileges ->
-        [
-            { name = "Gontrand" ; salary = 20000 }
-            { name = "Huberte" ; salary = 25000 }
-            { name = "Tchang-Yves" ; salary = 30000 }
-            { name = "Rosa" ; salary = 35000 }
-        ]
+        Some (
+            [
+                { name = "Gontrand" ; salary = 20000 }
+                { name = "Huberte" ; salary = 25000 }
+                { name = "Tchang-Yves" ; salary = 30000 }
+                { name = "Rosa" ; salary = 35000 }
+            ])
