@@ -113,3 +113,18 @@ let (>=>) f g x =
     >>= g
 
 let getAllSalariesFromLogin''''' = log >=> getUser >=> getAllSalaries
+
+type OptionBuilder() =
+    member this.Bind(x, f) = Option.bind f x
+
+    member this.Return(x) = Some x
+
+let opt = OptionBuilder()
+
+let getAllSalariesFromLogin'''''' login =
+    opt {
+        let! token = log login
+        let! user = getUser token
+        let! allSalaries = getAllSalaries user
+        return allSalaries
+    }
