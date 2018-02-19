@@ -57,3 +57,56 @@ let getAllSalaries user =
                 { name = "Tchang-Yves" ; salary = 30000 }
                 { name = "Rosa" ; salary = 35000 }
             ]
+                        
+            
+let getAllSalariesFromLogin' login =
+    let token = log login
+    match token with
+    | Failure err -> Failure err
+    | Success t ->
+        let user = getUser t
+        match user with
+        | Failure err -> Failure err
+        | Success u ->
+            let allSalaries = getAllSalaries u
+            allSalaries
+
+let whenSuccess f v =
+    match v with
+    | Failure err -> Failure err
+    | Success x -> f x
+
+let getAllSalariesFromLogin'' login =
+    login
+    |> log
+    |> whenSuccess getUser
+    |> whenSuccess getAllSalaries
+    
+let (>>=) v f = whenSuccess f v
+
+let getAllSalariesFromLogin'''' login =
+    login
+    |> log
+    >>= getUser
+    >>= getAllSalaries
+
+let (>=>) f g x =
+    (f x)
+    >>= g
+
+let getAllSalariesFromLogin''''' = log >=> getUser >=> getAllSalaries
+
+type ResultBuilder() =
+    member this.Bind(x, f) = whenSuccess f x
+
+    member this.Return(x) = Success x
+
+let result = ResultBuilder()
+
+let getAllSalariesFromLogin'''''' login =
+    result {
+        let! token = log login
+        let! user = getUser token
+        let! allSalaries = getAllSalaries user
+        return allSalaries
+    }
